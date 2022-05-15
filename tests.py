@@ -9,7 +9,6 @@ from RSM import RSM
 
 #metody zespołowe
 ensembles = {
-    'none': None,
     'bagging': BaggingClassifier(base_estimator=GaussianNB()),
     'RSM': RSM(base_estimator=GaussianNB()),
 }

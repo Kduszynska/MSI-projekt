@@ -21,9 +21,8 @@ datasets = ['sonar']
 
 #metody zespołowe
 ensembles = {
-    'none': None,
-    'bagging': BaggingClassifier(base_estimator=GaussianNB()),
-    'RSM': RSM(base_estimator=GaussianNB()),
+    'bagging': BaggingClassifier(base_estimator=GaussianNB(), n_estimators=5),
+    'RSM': RSM(base_estimator=GaussianNB(), n_estimators=5),
 }
 
 n_datasets = len(datasets)
@@ -43,13 +42,9 @@ for data_id, dataset in enumerate(datasets):
 
     for fold_id, (train, test) in enumerate(rskf.split(X, y)):
         for ensemble_id, ensemble_name in enumerate(ensembles):
-            
             X_train, y_train = X[train], y[train]
-            
-            #GNB
-            clf_GNB = GaussianNB()
-            clf_GNB.fit(X_train, y_train)
-            y_pred = clf_GNB.predict(X[test])
+            ENS = ensembles[ensemble_name].fit(X_train, y_train)
+            y_pred = ENS.predict(X[test])
             scores[ensemble_id, data_id, fold_id] = accuracy_score(y[test],y_pred)
 
             
