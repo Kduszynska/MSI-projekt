@@ -1,12 +1,8 @@
-from itertools import count
 import numpy as np
 from sklearn.ensemble import BaseEnsemble
 from sklearn.svm import LinearSVC
-from sklearn.model_selection import RepeatedStratifiedKFold
-from sklearn.naive_bayes import GaussianNB
 from sklearn.base import ClassifierMixin, clone
 from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
-from sklearn.metrics import accuracy_score
 from scipy.stats import mode
 
 class RSP(BaseEnsemble, ClassifierMixin):

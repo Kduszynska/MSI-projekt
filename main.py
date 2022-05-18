@@ -19,11 +19,13 @@ from RSP import RSP
 #zbiory danych
 datasets = ['ring']
 
+base_estimator=GaussianNB()
+n_estimators=5
 #metody zespołowe
 ensembles = {
-    'bagging': BaggingClassifier(base_estimator=GaussianNB(), n_estimators=5),
-    'RSM': RSM(base_estimator=GaussianNB(), n_estimators=5),
-    'RSP': RSP(base_estimator=GaussianNB(), n_estimators=5, n_subspace_choose=15, n_subspace_features=20)
+    'bagging': BaggingClassifier(base_estimator=base_estimator, n_estimators=n_estimators),
+    'RSM': RSM(base_estimator=base_estimator, n_estimators=n_estimators),
+    'RSP': RSP(base_estimator=base_estimator, n_estimators=n_estimators, n_subspace_choose=15, n_subspace_features=20)
 }
 
 n_datasets = len(datasets)

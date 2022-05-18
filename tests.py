@@ -1,6 +1,4 @@
 import numpy as np
-from sklearn.metrics import accuracy_score
-from scipy.stats import rankdata
 from sklearn.ensemble import BaggingClassifier
 from sklearn.naive_bayes import GaussianNB
 from tabulate import tabulate
