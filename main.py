@@ -7,6 +7,7 @@ from sklearn.svm import SVC, LinearSVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import RepeatedStratifiedKFold
 from RSM import RSM
+from RSP import RSP
 
 
 """ Klasyfikatory uzyte w eksperymencie(?)
@@ -16,13 +17,13 @@ from RSM import RSM
     Linear SVC: LinearSVC"""
 
 #zbiory danych
-datasets = ['sonar']
-
+datasets = ['ring']
 
 #metody zespołowe
 ensembles = {
     'bagging': BaggingClassifier(base_estimator=GaussianNB(), n_estimators=5),
     'RSM': RSM(base_estimator=GaussianNB(), n_estimators=5),
+    'RSP': RSP(base_estimator=GaussianNB(), n_estimators=5, n_subspace_choose=15, n_subspace_features=20)
 }
 
 n_datasets = len(datasets)

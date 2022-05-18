@@ -1,24 +1,30 @@
+from itertools import count
 import numpy as np
 from sklearn.ensemble import BaseEnsemble
+from sklearn.svm import LinearSVC
+from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.naive_bayes import GaussianNB
 from sklearn.base import ClassifierMixin, clone
 from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
+from sklearn.metrics import accuracy_score
+from scipy.stats import mode
 
-class RSM(BaseEnsemble, ClassifierMixin):
-    """Random subspace ensemble
-    Komitet klasyfikatorow losowych podprzestrzeniach cech"""
-
-    def __init__(self, base_estimator=None, n_estimators=10, n_subspace_features=5, hard_voting=True, random_state=None):
+class RSP(BaseEnsemble, ClassifierMixin):
+    def __init__(self, base_estimator=LinearSVC(), n_estimators=10, n_subspace_choose=10, n_subspace_features=20, hard_voting=True, random_state=None):
         #Klasyfikator bazowy
         self.base_estimator = base_estimator
         #liczba klasyfikatorów
         self.n_estimators = n_estimators
         #Liczba cech w jednej podprzestrzeni
-        self.n_subspace_features=n_subspace_features
+        self.n_subspace_features = n_subspace_features
         #Tryb podejmowania decyzji
         self.hard_voting = hard_voting
+        #ilość wybranych podprzestrzeni
+        self.n_subspace_choose=n_subspace_choose
         #Ustawianie ziarna losowości
         self.random_state = random_state
         np.random.seed(self.random_state)
+
     def fit(self, X, y):
         """Uczenie"""
         #Sprawdzenie czy X i y mają właściwy kształt
@@ -31,14 +37,36 @@ class RSM(BaseEnsemble, ClassifierMixin):
         if self.n_subspace_features > self.n_features:
             raise ValueError("Number of features in subspace higher than number of features.")
         #Wylosowanie podprzestrzeni cech
-        self.subspaces = np.random.randint(0, self.n_features, (self.n_estimators, self.n_subspace_features))
+        self.subspaces =[]
+        #x = np.floor(len(X)/self.n_subspace_features)
+        for i in range(self.n_estimators):
+            try:
+                self.subspaces.append(np.random.choice(len(X), size=self.n_subspace_features, replace=True))
+            except:
+                pass
+        self.subspaces = np.array(self.subspaces)
+       #Wybor podprzestrzeni przy pomocy prawdopodobieństwa a priori i odchylenia standardowego
+        probability = []
+        std_array = []
+        for i in self.subspaces:
+            y_new = y[i]
+            l,c = np.unique(y_new, return_counts=True)
+            for i in c:
+                probability.append(c/self.n_subspace_features)
+            std_array.append(np.std(probability))
+        
+        std_array= np.array(std_array)
+        inc = np.argsort(std_array)
+        part = inc[:self.n_subspace_choose]
+        self.subspaces = self.subspaces[part]
+        
 
         #Wyuczenie nowych modeli i stworzenie zespołu
         self.ensemble_ = []
         for i in range(self.n_estimators):
-            self.ensemble_.append(clone(self.base_estimator).fit(X[:, self.subspaces[i]], y))
-      
+            self.ensemble_.append(clone(self.base_estimator).fit(X[self.subspaces[i]], y[self.subspaces[i]]))
         return self
+
     def predict(self, X):
         """Predykcja"""
         #Sprawdzenie czy modele są wyuczone
@@ -53,12 +81,12 @@ class RSM(BaseEnsemble, ClassifierMixin):
             # Podejmowanie decyzji na podstawie twardego glosowania
             pred_ = []
             # Modele w zespole dokonuja predykcji
-            for i, member_clf in enumerate(self.ensemble_):
-                pred_.append(member_clf.predict(X[:, self.subspaces[i]]))
+            for i in range(self.n_estimators):
+                pred_.append(self.ensemble_[i].predict(X))
             # Zamiana na miacierz numpy (ndarray)
             pred_ = np.array(pred_)
             # Liczenie glosow
-            prediction = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)), axis=1, arr=pred_.T)
+            prediction = mode(pred_, axis=0)[0].flatten()
             # Zwrocenie predykcji calego zespolu
             return self.classes_[prediction]
         else:
@@ -77,3 +105,6 @@ class RSM(BaseEnsemble, ClassifierMixin):
         for i, member_clf in enumerate(self.ensemble_):
             probas_.append(member_clf.predict_proba(X[:, self.subspaces[i]]))
         return np.array(probas_)
+
+
+

@@ -6,18 +6,20 @@ from sklearn.naive_bayes import GaussianNB
 from tabulate import tabulate
 from scipy.stats import ttest_ind
 from RSM import RSM
+from RSP import RSP
 
 #metody zespołowe
 ensembles = {
-    'bagging': BaggingClassifier(base_estimator=GaussianNB()),
-    'RSM': RSM(base_estimator=GaussianNB()),
+    'bagging': BaggingClassifier(base_estimator=GaussianNB(), n_estimators=5),
+    'RSM': RSM(base_estimator=GaussianNB(), n_estimators=5),
+    'RSP': RSP(base_estimator=GaussianNB(), n_estimators=5, n_subspace_choose=15)
 }
 
 #import wyników
 scores= np.load("results.npy")
 scores = scores[:,0,:]
-#________________________TESTY STATYSTYCZNE_____________________
-"""Przeprowadzono testy statystyczne w celu określenia, która metoda preprocesingu jest najlepszana określonym klasyfikatorze"""
+
+
 alfa = .05
 t_statistic = np.zeros((len(ensembles), len(ensembles)))
 p_value = np.zeros((len(ensembles), len(ensembles)))
@@ -32,8 +34,8 @@ t_statistic_table = np.concatenate((names_column, t_statistic), axis=1)
 t_statistic_table = tabulate(t_statistic_table, headers, floatfmt=".2f")
 p_value_table = np.concatenate((names_column, p_value), axis=1)
 p_value_table = tabulate(p_value_table, headers, floatfmt=".2f")
-print("\n\n\tStatistic tests for GNB classificator")
-print("\n\nGNB t-statistic:\n\n", t_statistic_table, "\n\n GNB p-value:\n\n", p_value_table)
+print("\n\n\tStatistic tests for ensemble metod")
+print("\n\n t-statistic:\n\n", t_statistic_table, "\n\n p-value:\n\n", p_value_table)
 
 #Tablica przewag
 advantage = np.zeros((len(ensembles), len(ensembles)))
