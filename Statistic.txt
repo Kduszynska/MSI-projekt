@@ -1,0 +1,9 @@
+\begin{tabular}{llrlr}
+\hline
+                 & GNB   &   LSVC & SVC   &   kNN \\
+\hline
+ BurkittLymphoma & 0.816 &  0.866 & 0.775 & 0.855 \\
+                 & 0.066 &  0.052 & 0.024 & 0.043 \\
+                 & ---   &  3     & ---   & 3     \\
+\hline
+\end{tabular}

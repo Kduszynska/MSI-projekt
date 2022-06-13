@@ -4,13 +4,12 @@ from sklearn.base import ClassifierMixin, clone
 from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
 
 class RSM(BaseEnsemble, ClassifierMixin):
-    """Random subspace ensemble
-    Komitet klasyfikatorow losowych podprzestrzeniach cech"""
+    """Random Subspace Method"""
 
     def __init__(self, base_estimator=None, n_estimators=10, n_subspace_features=5, hard_voting=True, random_state=None):
         #Klasyfikator bazowy
         self.base_estimator = base_estimator
-        #liczba klasyfikatorów
+        #Liczba klasyfikatorów
         self.n_estimators = n_estimators
         #Liczba cech w jednej podprzestrzeni
         self.n_subspace_features=n_subspace_features
@@ -19,6 +18,7 @@ class RSM(BaseEnsemble, ClassifierMixin):
         #Ustawianie ziarna losowości
         self.random_state = random_state
         np.random.seed(self.random_state)
+
     def fit(self, X, y):
         """Uczenie"""
         #Sprawdzenie czy X i y mają właściwy kształt
@@ -37,42 +37,42 @@ class RSM(BaseEnsemble, ClassifierMixin):
         self.ensemble_ = []
         for i in range(self.n_estimators):
             self.ensemble_.append(clone(self.base_estimator).fit(X[:, self.subspaces[i]], y))
-      
         return self
+        
     def predict(self, X):
         """Predykcja"""
         #Sprawdzenie czy modele są wyuczone
         check_is_fitted(self, "classes_")
-        #sprawdzenie poprawności danych
+        #Sprawdzenie poprawności danych
         X = check_array(X)
-        # Sprawdzenie czy liczba cech się zgadza
+        #Sprawdzenie czy liczba cech się zgadza
         if X.shape[1] != self.n_features:
             raise ValueError("number of features does not match")
 
         if self.hard_voting:
-            # Podejmowanie decyzji na podstawie twardego glosowania
+            #Podejmowanie decyzji na podstawie twardego glosowania
             pred_ = []
-            # Modele w zespole dokonuja predykcji
+            #Modele w zespole dokonuja predykcji
             for i, member_clf in enumerate(self.ensemble_):
                 pred_.append(member_clf.predict(X[:, self.subspaces[i]]))
-            # Zamiana na miacierz numpy (ndarray)
+            #Zamiana na miacierz numpy (ndarray)
             pred_ = np.array(pred_)
             # Liczenie glosow
             prediction = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)), axis=1, arr=pred_.T)
             # Zwrocenie predykcji calego zespolu
             return self.classes_[prediction]
         else:
-            # Podejmowanie decyzji na podstawie wektorow wsparcia
+            #Podejmowanie decyzji na podstawie wektorow wsparcia
             esm = self.ensemble_support_matrix(X)
-            # Wyliczenie sredniej wartosci wsparcia
+            #Wyliczenie sredniej wartosci wsparcia
             average_support = np.mean(esm, axis=0)
             # Wskazanie etykiet
             prediction = np.argmax(average_support, axis=1)
-            # Zwrocenie predykcji calego zespolu
+            #Zwrocenie predykcji calego zespolu
             return self.classes_[prediction]
 
     def ensemble_support_matrix(self, X):
-        # Wyliczenie macierzy wsparcia
+        """Wyliczenie macierzy wsparcia"""
         probas_ = []
         for i, member_clf in enumerate(self.ensemble_):
             probas_.append(member_clf.predict_proba(X[:, self.subspaces[i]]))

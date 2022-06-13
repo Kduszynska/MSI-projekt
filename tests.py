@@ -1,16 +1,25 @@
 import numpy as np
 from sklearn.ensemble import BaggingClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC, LinearSVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import RepeatedStratifiedKFold
 from tabulate import tabulate
 from scipy.stats import ttest_ind
 from RSM import RSM
 from RSP import RSP
 
 #metody zespołowe
+base_estimator=GaussianNB()
+n_estimators=5
 ensembles = {
-    'bagging': BaggingClassifier(base_estimator=GaussianNB(), n_estimators=5),
-    'RSM': RSM(base_estimator=GaussianNB(), n_estimators=5),
-    'RSP': RSP(base_estimator=GaussianNB(), n_estimators=5, n_subspace_choose=15)
+    'bagging': BaggingClassifier(base_estimator=base_estimator, n_estimators=n_estimators),
+    'RSM': RSM(base_estimator=base_estimator, n_estimators=n_estimators, n_subspace_features=2),
+    'GNB': GaussianNB(),
+    'LSVC': LinearSVC(random_state=1234),
+    'SVC': SVC(random_state=1234),
+    'kNN': KNeighborsClassifier(),
+    #'RSP': RSP(base_estimator=base_estimator, n_estimators=n_estimators, n_subspace_choose=5, n_subspace_features=2)
 }
 
 #import wyników
