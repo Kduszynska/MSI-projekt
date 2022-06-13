@@ -22,20 +22,20 @@ datasets = ['arcene','BurkittLymphoma','kits-subset','rsctc2010_2']
 
 
 #base_estimator1=GaussianNB()
-base_estimator2=LinearSVC(random_state=1234)
+#base_estimator2=LinearSVC(random_state=1234)
 #base_estimator3=SVC(random_state=1234)
-#base_estimator4=KNeighborsClassifier()
+base_estimator4=KNeighborsClassifier()
 n_estimators=2
 #metody zespołowe
 ensembles = {
     #'GNB': GaussianNB(),
-    'LSVC': LinearSVC(random_state=1234),
+    #'LSVC': LinearSVC(random_state=1234),
     #'SVC': SVC(random_state=1234),
-    #'kNN': KNeighborsClassifier(),
-    'bagging': BaggingClassifier(base_estimator=base_estimator2, n_estimators=n_estimators),
-    'RSM': RSM(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_features=2),
-    'RSP': RSP(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
-    'RSPmod': RSPmod(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
+    'kNN': KNeighborsClassifier(),
+    'bagging': BaggingClassifier(base_estimator=base_estimator4, n_estimators=n_estimators),
+    'RSM': RSM(base_estimator=base_estimator4, n_estimators=n_estimators, n_subspace_features=2),
+    'RSP': RSP(base_estimator=base_estimator4, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
+    'RSPmod': RSPmod(base_estimator=base_estimator4, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
 }
 
 if __name__ == '__main__':
