@@ -1,0 +1,8 @@
+\begin{tabular}{lrrlllllrlllllllll}
+\hline
+ RSP 0.1   &   RSPmod 0.1 &   RSP 0.2 & RSPmod 0.2   & RSP 0.3       & RSPmod 0.3   & RSP 0.4   & RSPmod 0.4   &   RSP 0.5 & RSPmod 0.5   & RSP 0.6   & RSPmod 0.6   & RSP 0.7   & RSPmod 0.7   & RSP 0.8   & RSPmod 0.8   & RSP 0.9   & RSPmod 0.9   \\
+\hline
+ 0.250     &        0.285 &      0.29 & 0.255        & 0.320         & 0.240        & 0.255     & 0.225        &     0.265 & 0.220        & 0.285     & 0.220        & 0.260     & 0.250        & 0.215     & 0.260        & 0.260     & 0.245        \\
+ ---       &       15     &     15    & ---          & 8, 10, 12, 15 & ---          & ---       & ---          &    15     & ---          & ---       & ---          & ---       & ---          & ---       & ---          & ---       & ---          \\
+\hline
+\end{tabular}

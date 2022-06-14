@@ -18,7 +18,7 @@ from RSPmod import RSPmod
     Linear SVC: LinearSVC"""
 
 #zbiory danych
-datasets = ['arcene','BurkittLymphoma','kits-subset','rsctc2010_2']
+datasets = ['scens','house_8L','kits-subset','rsctc2010_2']
 
 
 #base_estimator1=GaussianNB()
@@ -26,6 +26,7 @@ base_estimator2=LinearSVC(random_state=1234)
 #base_estimator3=SVC(random_state=1234)
 #base_estimator4=KNeighborsClassifier()
 n_estimators=2
+
 #metody zespołowe
 ensembles = {
     #'GNB': GaussianNB(),
@@ -65,4 +66,4 @@ if __name__ == '__main__':
     #zapisanie  wyników 
     np.save('results', scores)
 
-    print(np.mean(scores,axis=2))
+    print(np.mean(scores,axis=2))   
