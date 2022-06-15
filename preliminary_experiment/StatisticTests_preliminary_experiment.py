@@ -2,9 +2,9 @@ from matplotlib.pyplot import axis
 import numpy as np
 from tabulate import tabulate
 from scipy.stats import ttest_ind
-from preliminary_experiment import ensembles, base_estimators
+from preliminary_experiment import ensembles
 
-# Zmienne globalne uzyte w testach statystycznych
+#ZMIENNE GLOBALNE
 alpha=.05
 m_fmt="%.3f"
 nc="---"
@@ -15,13 +15,13 @@ n_clfs = len(clfs)
 headers = list(clfs.keys())
 
 if __name__=="__main__":
-    # Pobranie wyników
+    #POBRANIE WYNIKÓW
     scores = np.load("results_preliminary_experiment.npy")
     mean_scores = np.mean(scores, axis=1)
     t = []
     
     t.append([m_fmt % v for v in mean_scores[:]])
-    # Obliczenie wartosci T i P
+    #TEST T-STUDEN, WYLICZENIE WARTOSCI T I p
     T, p = np.array(
         [[ttest_ind(scores[i, :], scores[j,:])
         for i in range(len(clfs))]
@@ -34,9 +34,9 @@ if __name__=="__main__":
                     if len(c) > 0 and len(c) < len(clfs)-1 else ("all" if len(c) == len(clfs)-1 else nc)
                     for c in conclusions])
 
-    # Prezentacja wyników 
+    #WYŚWIETLENIE UZYSKANYCH WYNIKOW
     print(tabulate(t, headers))
 
-    # Zapisanie wyników w formacie .tex
+    #ZAPISANIE WYNIKÓW DO FORMATU W LATEX
     with open('Statistic_preliminary_experiment.txt', 'w') as f:
         f.write(tabulate(t, headers, tablefmt='latex'))

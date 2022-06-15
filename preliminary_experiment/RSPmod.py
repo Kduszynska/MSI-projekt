@@ -1,25 +1,21 @@
 import numpy as np
 from sklearn.ensemble import BaseEnsemble
-from sklearn.svm import LinearSVC
-from sklearn.base import ClassifierMixin, clone
-from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
-from scipy.stats import mode
-from sklearn import datasets
-from sklearn.ensemble import BaggingClassifier
-from sklearn.metrics import accuracy_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC, LinearSVC
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import RepeatedStratifiedKFold
-from sklearn.decomposition import PCA
+from sklearn.base import ClassifierMixin, clone
+from sklearn.utils.validation import check_array, check_is_fitted, check_X_y
+from scipy.stats import mode
 from sklearn.neighbors import KernelDensity
 
 
 class RSPmod(BaseEnsemble, ClassifierMixin):
+    """Zmodyfikowany Random Sample Partition - na cechach, modyfikacja polegająca na wyborze podprzestrzeni z jak najmniejszą gęstością """
+
     def __init__(self, base_estimator=LinearSVC(), n_estimators=10, n_subspace_choose=0.4, n_subspace_features=2, hard_voting=True, random_state=None):
         #Klasyfikator bazowy
         self.base_estimator = base_estimator
-        #liczba klasyfikatorów
+        #Liczba klasyfikatorów
         self.n_estimators = n_estimators
         #Liczba cech w jednej podprzestrzeni
         self.n_subspace_features = n_subspace_features
@@ -44,14 +40,17 @@ class RSPmod(BaseEnsemble, ClassifierMixin):
         if self.n_subspace_features > self.n_features:
             raise ValueError("Number of features in subspace higher than number of features.")
 
-        n_subspace = int(X.shape[1]/self.n_subspace_features) 
+        #Wiliczenie liczby stworzonych podprzestrzeni
+        n_subspace = int(X.shape[1]/self.n_subspace_features)
+
+        #Zamiana procentowej ilości wybieranych podprzestrzeni na liczbową 
         self.n_subspace_choose = int(self.n_subspace_choose * n_subspace)
 
-        #Wylosowanie podprzestrzeni cech
+        #Wylosowanie podprzestrzeni cech - bez zwracania
         self.subspaces =[]
         self.subspaces = np.random.choice(X.shape[1], size=(n_subspace, self.n_subspace_features), replace=False) 
         
-        #Wybor podprzestrzeni
+        #Wybor podprzestrzeni na podstawie gęstości rozkładu
         log_density = []
         for i in self.subspaces:
             X_new =X[:,i]
@@ -63,7 +62,7 @@ class RSPmod(BaseEnsemble, ClassifierMixin):
         x = np.random.choice(n_subspace, size=(self.n_subspace_choose),replace=False)
         self.subspaces = self.subspaces[x,:]
 
-        #Wyuczenie nowych modeli i stworzenie zespołu
+        #Zmiana ilości estymatorów w zaleności od liczby wybranych podprzestrzeni
         if self.n_estimators > self.n_subspace_choose:
             self.n_estimators = self.n_subspace_choose
         

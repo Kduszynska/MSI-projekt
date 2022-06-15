@@ -57,16 +57,16 @@ class RSM(BaseEnsemble, ClassifierMixin):
                 pred_.append(member_clf.predict(X[:, self.subspaces[i]]))
             #Zamiana na miacierz numpy (ndarray)
             pred_ = np.array(pred_)
-            # Liczenie glosow
+            #Liczenie glosow
             prediction = np.apply_along_axis(lambda x: np.argmax(np.bincount(x)), axis=1, arr=pred_.T)
-            # Zwrocenie predykcji calego zespolu
+            #Zwrocenie predykcji calego zespolu
             return self.classes_[prediction]
         else:
             #Podejmowanie decyzji na podstawie wektorow wsparcia
             esm = self.ensemble_support_matrix(X)
             #Wyliczenie sredniej wartosci wsparcia
             average_support = np.mean(esm, axis=0)
-            # Wskazanie etykiet
+            #Wskazanie etykiet
             prediction = np.argmax(average_support, axis=1)
             #Zwrocenie predykcji calego zespolu
             return self.classes_[prediction]

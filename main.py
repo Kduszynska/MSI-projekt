@@ -11,44 +11,45 @@ from RSP import RSP
 from RSPmod import RSPmod
 
 
-""" Klasyfikatory uzyte w eksperymencie(?)
-    GNB: GaussianNB
-    SVC: SVC
-    kNN: KNeighborsClassifier
-    Linear SVC: LinearSVC"""
-
-#zbiory danych
+#ZBIORY DANYCH
 datasets = ['scens','house_8L','kits-subset','rsctc2010_2']
 
+""" Uzyte klasyfikatory 
+GNB: GaussianNB
+Linear SVC: LinearSVC
+SVC: SVC
+kNN: KNeighborsClassifier"""
 
-#base_estimator1=GaussianNB()
+base_estimator1=GaussianNB()
 base_estimator2=LinearSVC(random_state=1234)
-#base_estimator3=SVC(random_state=1234)
-#base_estimator4=KNeighborsClassifier()
+base_estimator3=SVC(random_state=1234)
+base_estimator4=KNeighborsClassifier()
+
 n_estimators=2
 
-#metody zespołowe
+#METODY ZESPOŁOWE
 ensembles = {
-    #'GNB': GaussianNB(),
+    'GNB': GaussianNB(),
     'LSVC': LinearSVC(random_state=1234),
-    #'SVC': SVC(random_state=1234),
-    #'kNN': KNeighborsClassifier(),
+    'SVC': SVC(random_state=1234),
+    'kNN': KNeighborsClassifier(),
     'bagging': BaggingClassifier(base_estimator=base_estimator2, n_estimators=n_estimators),
     'RSM': RSM(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_features=2),
     'RSP': RSP(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
     'RSPmod': RSPmod(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
 }
 
+
 if __name__ == '__main__':
 
-    n_datasets = len(datasets)
+    #WALIDACJA KRZYZOWA, 5 FOLDOWA 2 KROTNIE POWTÓRZONA
     n_splits = 5
     n_repeats = 2
 
-    #walidacja krzyzowa
     rskf = RepeatedStratifiedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state = 44)
 
-    #tablice z wynikami
+    #DO PRZECHOWYWANIA WYNIKOW
+    n_datasets = len(datasets)
     scores = np.zeros((len(ensembles), n_datasets, n_splits*n_repeats))
 
     for data_id, dataset in enumerate(datasets):
@@ -63,7 +64,6 @@ if __name__ == '__main__':
                 y_pred = ENS.predict(X[test])
                 scores[ensemble_id, data_id, fold_id] = accuracy_score(y[test],y_pred)
             
-    #zapisanie  wyników 
+    #ZAPISANIE WYNIKÓW do results
     np.save('results', scores)
-
-    print(np.mean(scores,axis=2))   
+  
