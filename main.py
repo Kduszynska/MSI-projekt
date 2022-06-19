@@ -2,6 +2,7 @@ from sklearn import datasets
 from sklearn.ensemble import BaggingClassifier
 import numpy as np
 from sklearn.metrics import accuracy_score
+from strlearn.metrics import balanced_accuracy_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC, LinearSVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -33,10 +34,10 @@ ensembles = {
     'LSVC': LinearSVC(random_state=1234),
     'SVC': SVC(random_state=1234),
     'kNN': KNeighborsClassifier(),
-    'bagging': BaggingClassifier(base_estimator=base_estimator2, n_estimators=n_estimators),
-    'RSM': RSM(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_features=2),
-    'RSP': RSP(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
-    'RSPmod': RSPmod(base_estimator=base_estimator2, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
+    'bagging': BaggingClassifier(base_estimator=base_estimator3, n_estimators=n_estimators),
+    'RSM': RSM(base_estimator=base_estimator3, n_estimators=n_estimators, n_subspace_features=2),
+    'RSP': RSP(base_estimator=base_estimator3, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
+    'RSPmod': RSPmod(base_estimator=base_estimator3, n_estimators=n_estimators, n_subspace_choose=0.6, n_subspace_features=2),
 }
 
 
@@ -62,7 +63,10 @@ if __name__ == '__main__':
                 X_train, y_train = X[train], y[train]
                 ENS = ensembles[ensemble_name].fit(X_train, y_train)
                 y_pred = ENS.predict(X[test])
+                #METRYKA ACCURACY SCORE
                 scores[ensemble_id, data_id, fold_id] = accuracy_score(y[test],y_pred)
+                #METRYKA BALANCED ACCURACY SCORE
+                #scores[ensemble_id, data_id, fold_id] = balanced_accuracy_score(y[test],y_pred)
             
     #ZAPISANIE WYNIKÓW do results
     np.save('results', scores)
